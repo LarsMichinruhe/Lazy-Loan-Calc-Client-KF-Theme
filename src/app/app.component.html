@@ -1,0 +1,135 @@
+<div class="main">
+
+	<kf-headline [overline]="'EOS goes BWS'" [headline]="'Kreditrechner'" [showBackButton]="false"
+		[backButtonAriaLabel]="'back'" [backButtonDataAutomationId]="'headline-back-button-automation-id'"
+		(onBackButtonClick)="''" [resetTopSpacing]="false">
+	</kf-headline>
+
+	<kf-tile [interactive]="false" [shadowBoxOnBox]="true">
+
+		<form #loanForm="ngForm" (ngSubmit)="calculateLoan(loanForm)">
+			<div>
+				<mat-form-field appearance="fill">
+					<mat-label>Kreditsumme in Euro</mat-label>
+					<input matInput type="number" [(ngModel)]="loanRequest.principal" name="principal" required min="1">
+					<mat-error
+						*ngIf="loanForm.controls['principal']?.invalid && loanForm.controls['principal']?.touched">
+						<kf-input-error message="Kreditsumme muss größer als 0 sein."></kf-input-error>
+					</mat-error>
+				</mat-form-field>
+			</div>
+			<div>
+				<mat-form-field appearance="fill">
+					<mat-label>Zinssatz in Prozent</mat-label>
+					<input matInput type="number" [(ngModel)]="loanRequest.annualInterestRate" name="annualInterestRate"
+						required min="0.01" step="0.01">
+					<mat-error
+						*ngIf="loanForm.controls['annualInterestRate']?.invalid && loanForm.controls['annualInterestRate']?.touched">
+						<kf-input-error message="Zinssatz muss größer als 0 sein."></kf-input-error>
+					</mat-error>
+				</mat-form-field>
+			</div>
+			<div>
+				<mat-form-field appearance="fill">
+					<mat-label>Laufzeit in Jahren</mat-label>
+					<input matInput type="number" [(ngModel)]="loanRequest.years" name="years" required min="1">
+					<mat-error *ngIf="loanForm.controls['years']?.invalid && loanForm.controls['years']?.touched">
+						<kf-input-error message="Laufzeit muss größer als 0 sein."></kf-input-error>
+					</mat-error>
+				</mat-form-field>
+			</div>
+			<div>
+				<mat-form-field appearance="fill">
+					<mat-label>Tilgungsrate in Prozent</mat-label>
+					<input matInput type="number" [(ngModel)]="loanRequest.annualRepaymentRate"
+						name="annualRepaymentRate" required min="0.01" step="0.01">
+					<mat-error
+						*ngIf="loanForm.controls['annualRepaymentRate']?.invalid && loanForm.controls['annualRepaymentRate']?.touched">
+						<kf-input-error message="Tilgungsrate muss größer als 0 sein."></kf-input-error>
+					</mat-error>
+				</mat-form-field>
+			</div>
+			<div class="button-container">
+				<button mat-flat-button color="primary" type="submit">Berechnen</button>
+				<button mat-flat-button color="primary" type="button" (click)="openHelp()">Hilfe</button>
+			</div>
+		</form>
+	</kf-tile>
+
+	<div *ngIf="loanResponse">
+
+		<div id="results">
+			
+			<h2>Ergebnisse</h2>
+			
+			<kf-tile [interactive]="false" [shadowBoxOnBox]="true">
+				<h3>Monatliche Ratenhöhe: {{ loanResponse.monthlyPayment | currency:'EUR' }}</h3>
+				<h3>Gesamte Zinsbelastung: {{ loanResponse.totalInterest | currency:'EUR' }}</h3>
+			</kf-tile>
+			
+		</div>
+
+		<kf-tile [interactive]="false" [shadowBoxOnBox]="true">
+			<h3>Tilgungsplan</h3>
+			<table mat-table [dataSource]="loanResponse.amortizationSchedule" class="kf-table text-nowrap">
+				<ng-container matColumnDef="month">
+					<th mat-header-cell *matHeaderCellDef> Monat </th>
+					<td mat-cell *matCellDef="let entry"> {{ entry.month }} </td>
+				</ng-container>
+
+				<ng-container matColumnDef="principalPayment">
+					<th mat-header-cell *matHeaderCellDef> Tilgungsanteil </th>
+					<td mat-cell *matCellDef="let entry"> {{ entry.principalPayment | currency:'EUR' }} </td>
+				</ng-container>
+
+				<ng-container matColumnDef="interestPayment">
+					<th mat-header-cell *matHeaderCellDef> Zinsanteil </th>
+					<td mat-cell *matCellDef="let entry"> {{ entry.interestPayment | currency:'EUR' }} </td>
+				</ng-container>
+
+				<ng-container matColumnDef="remainingBalance">
+					<th mat-header-cell *matHeaderCellDef> Restschuld </th>
+					<td mat-cell *matCellDef="let entry"> {{ entry.remainingBalance | currency:'EUR' }} </td>
+				</ng-container>
+
+				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+			</table>
+		</kf-tile>
+
+	</div>
+
+	<div id="helpModal" class="modal">
+		<div class="modal-content">
+			<span class="close" (click)="closeHelp()">&times;</span>
+			<h2>Hilfe</h2>
+			<p>Um das Formular auszufüllen, geben Sie bitte die folgenden Informationen ein:</p>
+			<ul>
+				<li><strong>Kreditsumme in Euro:</strong> Der Gesamtbetrag des Kredits, den Sie aufnehmen möchten.
+					Dieser
+					Wert muss größer als 0 sein.</li>
+				<li><strong>Zinssatz in Prozent:</strong> Der jährliche Zinssatz des Kredits. Dieser Wert muss
+					größer als 0
+					sein.</li>
+				<li><strong>Laufzeit in Jahren:</strong> Die Anzahl der Jahre, über die der Kredit zurückgezahlt
+					wird.
+					Dieser Wert muss größer als 0 sein.</li>
+				<li><strong>Monatliche Tilgungsrate:</strong> Der Betrag, den Sie monatlich zurückzahlen möchten.
+					Dieser
+					Wert muss größer als 0 sein.</li>
+			</ul>
+			<p>Nachdem Sie alle Felder ausgefüllt haben, klicken Sie auf "Berechnen", um die Ergebnisse zu sehen.
+			</p>
+			<p>Die Ergebnisse umfassen:</p>
+			<ul>
+				<li><strong>Monatliche Ratenhöhe:</strong> Der Betrag, den Sie monatlich zahlen müssen.</li>
+				<li><strong>Gesamte Zinsbelastung:</strong> Der Gesamtbetrag der Zinsen, die Sie über die Laufzeit
+					des
+					Kredits zahlen werden.</li>
+				<li><strong>Tilgungsplan:</strong> Eine detaillierte Aufschlüsselung der monatlichen Zahlungen,
+					einschließlich Tilgungsanteil, Zinsanteil und Restschuld.</li>
+			</ul>
+		</div>
+	</div>
+
+</div>
