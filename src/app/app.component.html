@@ -1,6 +1,6 @@
 <div class="main">
 
-	<kf-headline [overline]="'EOS goes BWS'" [headline]="'Kreditrechner'" [showBackButton]="false"
+	<kf-headline [overline]="'EOS goes BWS'" [headline]="'Rechner für Annuitätendarlehen'" [showBackButton]="false"
 		[backButtonAriaLabel]="'back'" [backButtonDataAutomationId]="'headline-back-button-automation-id'"
 		(onBackButtonClick)="''" [resetTopSpacing]="false">
 	</kf-headline>
@@ -11,7 +11,8 @@
 			<div>
 				<mat-form-field appearance="fill">
 					<mat-label>Kreditsumme in Euro</mat-label>
-					<input matInput type="number" [(ngModel)]="loanRequest.principal" name="principal" required min="1">
+					<input matInput type="text" [mask]="'separator'" thousandSeparator="." decimalMarker=","
+						[(ngModel)]="loanRequest.principal" name="principal" required min="1">
 					<mat-error
 						*ngIf="loanForm.controls['principal']?.invalid && loanForm.controls['principal']?.touched">
 						<kf-input-error message="Kreditsumme muss größer als 0 sein."></kf-input-error>
@@ -21,8 +22,9 @@
 			<div>
 				<mat-form-field appearance="fill">
 					<mat-label>Zinssatz in Prozent</mat-label>
-					<input matInput type="number" [(ngModel)]="loanRequest.annualInterestRate" name="annualInterestRate"
-						required min="0.01" step="0.01">
+					<input matInput type="text" [mask]="'separator'" thousandSeparator="." decimalMarker=","
+						[(ngModel)]="loanRequest.annualInterestRate" name="annualInterestRate" required min="0.01"
+						step="0.01">
 					<mat-error
 						*ngIf="loanForm.controls['annualInterestRate']?.invalid && loanForm.controls['annualInterestRate']?.touched">
 						<kf-input-error message="Zinssatz muss größer als 0 sein."></kf-input-error>
@@ -41,8 +43,9 @@
 			<div>
 				<mat-form-field appearance="fill">
 					<mat-label>Tilgungsrate in Prozent</mat-label>
-					<input matInput type="number" [(ngModel)]="loanRequest.annualRepaymentRate"
-						name="annualRepaymentRate" required min="0.01" step="0.01">
+					<input matInput type="text" [mask]="'separator'" thousandSeparator="." decimalMarker=","
+						[(ngModel)]="loanRequest.annualRepaymentRate" name="annualRepaymentRate" required min="0.01"
+						step="0.01">
 					<mat-error
 						*ngIf="loanForm.controls['annualRepaymentRate']?.invalid && loanForm.controls['annualRepaymentRate']?.touched">
 						<kf-input-error message="Tilgungsrate muss größer als 0 sein."></kf-input-error>
@@ -59,14 +62,14 @@
 	<div *ngIf="loanResponse">
 
 		<div id="results">
-			
+
 			<h2>Ergebnisse</h2>
-			
+
 			<kf-tile [interactive]="false" [shadowBoxOnBox]="true">
 				<h3>Monatliche Ratenhöhe: {{ loanResponse.monthlyPayment | currency:'EUR' }}</h3>
 				<h3>Gesamte Zinsbelastung: {{ loanResponse.totalInterest | currency:'EUR' }}</h3>
 			</kf-tile>
-			
+
 		</div>
 
 		<kf-tile [interactive]="false" [shadowBoxOnBox]="true">

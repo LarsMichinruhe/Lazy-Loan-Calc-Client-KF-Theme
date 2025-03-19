@@ -12,6 +12,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgxMaskDirective } from 'ngx-mask';
 
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
@@ -20,54 +22,54 @@ registerLocaleData(localeDe, 'de-DE');
 
 
 @Component({
-  selector: 'loancalc',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  standalone: true,
-  imports: [CommonModule, FormsModule, KFThemeCommonModule, KFIconModule, KFInputErrorModule, KfThemeHeadlineModule, KfTileModule, MatButtonModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule]
+	selector: 'loancalc',
+	templateUrl: './app.component.html',
+	styleUrls: ['./app.component.css'],
+	standalone: true,
+	imports: [CommonModule, FormsModule, KFThemeCommonModule, KFIconModule, KFInputErrorModule, KfThemeHeadlineModule, KfTileModule, MatButtonModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule, ReactiveFormsModule, NgxMaskDirective]
 })
 export class LoanCalculatorComponent {
-  loanRequest = {
-    principal: 0,
-    annualInterestRate: 0,
-    years: 0,
-    annualRepaymentRate: 0
-  };
-  loanResponse: any;
-  displayedColumns: string[] = ['month', 'principalPayment', 'interestPayment', 'remainingBalance'];
+	loanRequest = {
+		principal: 0,
+		annualInterestRate: 0,
+		years: 0,
+		annualRepaymentRate: 0
+	};
+	loanResponse: any;
+	displayedColumns: string[] = ['month', 'principalPayment', 'interestPayment', 'remainingBalance'];
 
-  constructor(private loanService: LoanService) { }
+	constructor(private loanService: LoanService) { }
 
-  calculateLoan(form: NgForm) {
-    if (form.valid && this.areValuesPositive()) {
-      this.loanService.calculateLoan(this.loanRequest).subscribe(response => {
-        this.loanResponse = response;
-      });
-    } else {
-      Object.values(form.controls).forEach(control => {
-        control.markAsTouched();
-      });
-    }
-  }
-  
-  private areValuesPositive(): boolean {
-    return this.loanRequest.principal > 0 &&
-           this.loanRequest.annualInterestRate > 0 &&
-           this.loanRequest.years > 0 &&
-           this.loanRequest.annualRepaymentRate > 0;
-  }
-  
-  openHelp() {
-    const modal = document.getElementById('helpModal');
-    if (modal) {
-      modal.style.display = 'block';
-    }
-  }
+	calculateLoan(form: NgForm) {
+		if (form.valid && this.areValuesPositive()) {
+			this.loanService.calculateLoan(this.loanRequest).subscribe(response => {
+				this.loanResponse = response;
+			});
+		} else {
+			Object.values(form.controls).forEach(control => {
+				control.markAsTouched();
+			});
+		}
+	}
 
-  closeHelp() {
-    const modal = document.getElementById('helpModal');
-    if (modal) {
-      modal.style.display = 'none';
-    }
-  }
+	private areValuesPositive(): boolean {
+		return this.loanRequest.principal > 0 &&
+			this.loanRequest.annualInterestRate > 0 &&
+			this.loanRequest.years > 0 &&
+			this.loanRequest.annualRepaymentRate > 0;
+	}
+
+	openHelp() {
+		const modal = document.getElementById('helpModal');
+		if (modal) {
+			modal.style.display = 'block';
+		}
+	}
+
+	closeHelp() {
+		const modal = document.getElementById('helpModal');
+		if (modal) {
+			modal.style.display = 'none';
+		}
+	}
 }
